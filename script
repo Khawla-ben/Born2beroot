@@ -1,0 +1,21 @@
+#!/bin/bash
+
+
+lvm=$(lsblk | grep lvm)
+lvmcon=$(if [ lvm == 0 ];then echo "no";else echo "yes"; fi)
+p=$(netstat | grep ESTAB | wc -l)
+
+wall "
+	#Architecture: $(uname -a)
+	#CPU physical : $(lscpu | grep "^CPU(s):" | awk '{ print $2 }')
+	#vCPU : $(cat /proc/cpuinfo | grep processor | wc -l)
+	#Memory Usgae: $(free -m |awk '/Mem/{printf "%d/%d MB (%.2f %%)",$3, $2, $3/$2 *100}')
+	#Disk Usage: $(df -h --total | awk '/total/{printf "%d/%dGb (%s)",$3*1024,$2,$5}')
+	#CPU load: $(top -bn1 | awk '$1=="%Cpu(s):" {printf("%.1f%%", $2+$4)}')
+	#Last boot:$(who -b |awk '{print $3 " "$4}')
+	#LVM use: $lvmcon
+	#Connections TCP : $p ESTABLISHED
+	#User log: $(who | wc -l)
+	#Network: IP $(hostname -I)$(ip link | grep ether | awk ' {printf("(%s)",$2)}')
+	#Sudo : $(cat /var/log/sudo/file.org | grep COMMAND | wc -l) cmd
+"
